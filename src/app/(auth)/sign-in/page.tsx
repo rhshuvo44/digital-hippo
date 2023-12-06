@@ -17,9 +17,13 @@ import {
   AuthCredentialsValidator,
   TAuthCredentialsValidator,
 } from "@/lib/validators/account-credentials-validator";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const page = () => {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const isSeller = searchParams.get("as") === "seller";
+  const origin = searchParams.get("origin");
   const {
     register,
     handleSubmit,
@@ -28,7 +32,7 @@ const page = () => {
   } = useForm<TAuthCredentialsValidator>({
     resolver: zodResolver(AuthCredentialsValidator),
   });
-  const router = useRouter();
+
   const { mutate, isLoading } = trpc.auth.createPayloadUser.useMutation({
     onError: (err) => {
       if (err.data?.code === "CONFLICT") {
@@ -102,6 +106,19 @@ const page = () => {
               <Button type="submit">Sign in</Button>
             </div>
           </form>
+          <div className="relative">
+            <div
+              className="absolute inset-0 flex items-center"
+              aria-hidden="true"
+            >
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">
+                or
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
