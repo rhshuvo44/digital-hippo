@@ -4,20 +4,22 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import {
-  AuthCredentialsValidator,
-  TAuthCredentialsValidator,
-} from "@/lib/validators/account-credentials-validator";
-import { trpc } from "@/trpc/client";
 import { toast } from "sonner";
+
+import { trpc } from "@/trpc/client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { ZodError } from "zod";
-const SignUp = () => {
+import {
+  AuthCredentialsValidator,
+  TAuthCredentialsValidator,
+} from "@/lib/validators/account-credentials-validator";
+import { useRouter } from "next/navigation";
+
+const page = () => {
   const {
     register,
     handleSubmit,
@@ -52,15 +54,15 @@ const SignUp = () => {
       <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
         <div className="flex flex-col items-center space-y-2 text-center">
           <Icons.logo className="h-20 w-20" />
-          <h1 className="text-2xl font-bold">Create an account</h1>
+          <h1 className="text-2xl font-bold">Sign in to your account</h1>
           <Link
-            href="/sign-in"
+            href="/sign-up"
             className={buttonVariants({
               variant: "link",
               className: "gap-1.5",
             })}
           >
-            Already have an account? sing-in
+            Don&apos;t have an account? sing-up
             <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
@@ -97,7 +99,7 @@ const SignUp = () => {
                   </p>
                 )}
               </div>
-              <Button type="submit">Sign Up</Button>
+              <Button type="submit">Sign in</Button>
             </div>
           </form>
         </div>
@@ -106,4 +108,4 @@ const SignUp = () => {
   );
 };
 
-export default SignUp;
+export default page;
