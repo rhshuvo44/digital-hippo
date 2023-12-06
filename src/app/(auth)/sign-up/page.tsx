@@ -8,6 +8,7 @@ import {
   AuthCredentialsValidator,
   TAuthCredentialsValidator,
 } from "@/lib/validators/account-credentials-validator";
+import { trpc } from "@/trpc/client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRight } from "lucide-react";
@@ -22,8 +23,10 @@ const page = () => {
   } = useForm<TAuthCredentialsValidator>({
     resolver: zodResolver(AuthCredentialsValidator),
   });
-  // const {data} = trpc.anyApiRoute.useQuery();
-  const onSubmit = (data: TAuthCredentialsValidator) => console.log(data);
+  const { mutate, isLoading } = trpc.auth.createPayloadUser.useMutation({});
+  const onSubmit = ({ email, password }: TAuthCredentialsValidator) => {
+    mutate({ email, password });
+  };
   return (
     <div className="container relative flex pt-20 flex-col items-center justify-center lg:px-0">
       <div
@@ -50,6 +53,7 @@ const page = () => {
               <div className="grid gap-1 py-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
+                  type="email"
                   className={cn({
                     "focus-visible:ring-red-500": errors.email,
                   })}
@@ -60,6 +64,7 @@ const page = () => {
               <div className="grid gap-1 py-2">
                 <Label htmlFor="password">Password</Label>
                 <Input
+                  type="password"
                   className={cn({
                     "focus-visible:ring-red-500": errors.password,
                   })}
