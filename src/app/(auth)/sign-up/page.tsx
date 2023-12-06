@@ -4,6 +4,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 import {
   AuthCredentialsValidator,
   TAuthCredentialsValidator,
@@ -14,6 +15,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
+import { ZodError } from "zod";
+import { useRouter } from "next/navigation";
+import { error } from "console";
 const SignUp = () => {
   const {
     register,
@@ -23,7 +27,24 @@ const SignUp = () => {
   } = useForm<TAuthCredentialsValidator>({
     resolver: zodResolver(AuthCredentialsValidator),
   });
-  const { mutate, isLoading } = trpc.auth.createPayloadUser.useMutation({});
+  const router = useRouter();
+  const { mutate, isLoading } = trpc.auth.createPayloadUser.useMutation({
+    onError: (err) => {
+      if (err.data?.code === "CONFLICT") {
+        toast.error("This email is already in use. Sing in instead?");
+        return;
+      }
+      if (err instanceof ZodError) {
+        toast.error(err.issues[0].message);
+        return;
+      }
+      toast.error("Something went wrong. Please try again");
+    },
+    onSuccess: ({ sentToEmail }) => {
+      toast.success(`Verification email sent to ${sentToEmail}.`);
+      router.push("/verify-email?to=" + sentToEmail);
+    },
+  });
   const onSubmit = ({ email, password }: TAuthCredentialsValidator) => {
     mutate({ email, password });
   };
@@ -57,6 +78,9 @@ const SignUp = () => {
                   placeholder="you@example.com"
                   {...register("email", { required: true })}
                 />
+                {errors?.email && (
+                  <p className="text-sm text-red-500">{errors.email.message}</p>
+                )}
               </div>
               <div className="grid gap-1 py-2">
                 <Label htmlFor="password">Password</Label>
@@ -68,6 +92,11 @@ const SignUp = () => {
                   placeholder="*****"
                   {...register("password", { required: true })}
                 />
+                {errors?.password && (
+                  <p className="text-sm text-red-500">
+                    {errors.password.message}
+                  </p>
+                )}
               </div>
               <Button type="submit">Sign Up</Button>
             </div>
@@ -79,4 +108,3 @@ const SignUp = () => {
 };
 
 export default SignUp;
-
