@@ -14,7 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
-const page = () => {
+const SignUp = () => {
   const {
     register,
     handleSubmit,
@@ -81,4 +81,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default SignUp;
