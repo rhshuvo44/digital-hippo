@@ -33,7 +33,19 @@ const page = () => {
     resolver: zodResolver(AuthCredentialsValidator),
   });
 
-  const { mutate, isLoading } = trpc.auth.createPayloadUser.useMutation({
+  const { mutate: signIn, isLoading } = trpc.auth.signIn.useMutation({
+    onSuccess: () => {
+      toast.success("Signed in successfully");
+      router.refresh();
+      if (origin) {
+        router.push(`/${origin}`);
+        return;
+      }
+      if (isSeller) {
+        router.push(`/sell`);
+        return;
+      }
+    },
     onError: (err) => {
       if (err.data?.code === "CONFLICT") {
         toast.error("This email is already in use. Sing in instead?");
@@ -45,13 +57,9 @@ const page = () => {
       }
       toast.error("Something went wrong. Please try again");
     },
-    onSuccess: ({ sentToEmail }) => {
-      toast.success(`Verification email sent to ${sentToEmail}.`);
-      router.push("/verify-email?to=" + sentToEmail);
-    },
   });
   const onSubmit = ({ email, password }: TAuthCredentialsValidator) => {
-    mutate({ email, password });
+    signIn({ email, password });
   };
   return (
     <div className="container relative flex pt-20 flex-col items-center justify-center lg:px-0">

@@ -47,4 +47,21 @@ export const authRouter = router({
       }
       return { succes: true };
     }),
+  signIn: publicProcedure
+    .input(AuthCredentialsValidator)
+    .mutation(async ({ input, ctx }) => {
+      const { email, password } = input;
+      const payload = await getPayloadClient();
+      const { res } = ctx;
+      try {
+        await payload.login({
+          collection: "users",
+          data: {
+            email,
+            password,
+          },
+          res,
+        });
+      } catch (error) {}
+    }),
 });
